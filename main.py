@@ -481,4 +481,4 @@ while run:
 
     pygame.display.flip()
 pygame.quit()
-git remote add origin https://github.com/chamindu24/chess-game-python.git
+
