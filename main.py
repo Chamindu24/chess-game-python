@@ -2,12 +2,13 @@
 # part one, set up variables images and game loop
 
 import pygame
+import random
 
 pygame.init()
 WIDTH = 1000
-HEIGHT = 900
+HEIGHT = 800
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
-pygame.display.set_caption('Two-Player Pygame Chess!')
+pygame.display.set_caption(' Chess Game')
 font = pygame.font.Font('freesansbold.ttf', 20)
 medium_font = pygame.font.Font('freesansbold.ttf', 40)
 big_font = pygame.font.Font('freesansbold.ttf', 50)
@@ -22,6 +23,7 @@ black_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight',
                 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
 black_locations = [(0, 7), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (7, 7),
                    (0, 6), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6)]
+                
 captured_pieces_white = []
 captured_pieces_black = []
 # 0 - whites turn no selection: 1-whites turn piece selected: 2- black turn no selection, 3 - black turn piece selected
@@ -145,6 +147,39 @@ def check_options(pieces, locations, turn):
             moves_list = check_king(location, turn)
         all_moves_list.append(moves_list)
     return all_moves_list
+
+# Simple AI logic for black pieces
+def ai_move():
+    global black_locations, white_locations, black_pieces, white_pieces, turn_step, selection
+
+    # Get all possible moves for black pieces
+    all_moves = check_options(black_pieces, black_locations, 'black')
+    possible_moves = []
+
+    # Collect all moves with the format [(piece_index, target_position), ...]
+    for i, moves in enumerate(all_moves):
+        for move in moves:
+            possible_moves.append((i, move))
+
+    if not possible_moves:
+        print("AI has no valid moves. Black loses!")
+        return  # AI loses if no moves available
+
+    # AI picks a random valid move
+    selected_move = random.choice(possible_moves)
+    piece_index, target = selected_move
+
+    # Update piece position and capture if needed
+    black_locations[piece_index] = target
+    if target in white_locations:
+        capture_index = white_locations.index(target)
+        captured_pieces_black.append(white_pieces[capture_index])
+        del white_pieces[capture_index]
+        del white_locations[capture_index]
+
+    # Advance the turn
+    turn_step = 0  # White's turn
+    selection = 100
 
 
 # check king valid moves
@@ -436,7 +471,7 @@ while run:
                 captured_pieces_black = []
                 turn_step = 0
                 selection = 100
-                valid_moves = []
+                valid_moves =  []
                 black_options = check_options(black_pieces, black_locations, 'black')
                 white_options = check_options(white_pieces, white_locations, 'white')
 
@@ -446,3 +481,4 @@ while run:
 
     pygame.display.flip()
 pygame.quit()
+git remote add origin https://github.com/chamindu24/chess-game-python.git
